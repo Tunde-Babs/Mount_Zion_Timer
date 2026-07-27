@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+    <title>Mount Zion Timer - Presenter View</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        overflow: hidden;
+        transition: background 0.5s ease;
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        cursor: none;
+      }
+      body.flash { animation: flashScreen 0.5s ease-in-out; }
+      @keyframes flashScreen { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+      
+      #presenter-container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem;
+        user-select: none;
+      }
+      #overtime-warning {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        color: white;
+        padding: 2rem 4rem;
+        border-radius: 1.5rem;
+        font-size: 4vw;
+        font-weight: bold;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        display: none;
+        text-align: center;
+        border: 4px solid white;
+        z-index: 100;
+      }
+      #overtime-warning.visible { display: block; animation: pulse 2s infinite; }
+      
+      #timer-display {
+        font-size: 25vw;
+        font-weight: bold;
+        color: white;
+        text-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        margin-bottom: 2rem;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+      }
+      #timer-title {
+        font-size: 6vw;
+        color: white;
+        opacity: 0.95;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        text-align: center;
+        max-width: 90%;
+      }
+      #timer-notes {
+        font-size: 3.5vw;
+        color: white;
+        opacity: 0.85;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        text-align: center;
+        max-width: 80%;
+      }
+      #messages-container {
+        position: absolute;
+        top: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        z-index: 50;
+      }
+      .message-banner {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: #1f2937;
+        padding: 1.5rem 3rem;
+        border-radius: 1rem;
+        font-size: 2.5vw;
+        font-weight: 600;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+      
+      #progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2rem;
+        background: rgba(0,0,0,0.3);
+      }
+      #progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981 0%, #fbbf24 50%, #ef4444 100%);
+        transition: width 0.1s linear;
+      }
+      #waiting-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        opacity: 0.7;
+      }
+      #waiting-message h2 { font-size: 3vw; margin-bottom: 1rem; }
+      #waiting-message p { font-size: 1.5vw; }
+      #esc-hint {
+        position: absolute;
+        bottom: 3rem;
+        right: 2rem;
+        color: white;
+        opacity: 0.3;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="overtime-warning">⚠️ TIME UP<br/>PLEASE ROUND UP ⚠️</div>
+    <div id="messages-container"></div>
+    <div id="presenter-container">
+      <div id="waiting-message">
+        <h2>⏱️ Mount Zion Timer</h2>
+        <p>Waiting for timer data...</p>
+      </div>
+      <div id="timer-display" style="display: none;">10:00</div>
+      <div id="timer-title" style="display: none;">Timer</div>
+      <div id="timer-notes" style="display: none;"></div>
+    </div>
+    <div id="progress-bar">
+      <div id="progress-fill" style="width: 0%"></div>
+    </div>
+    <div id="esc-hint">Press ESC to exit</div>
+    
+    <script>
+      let lastFlashTime = 0;
+      let hasReceivedData = false;
+
+      // Listen for updates from main process via electronAPI
+      if (window.electronAPI) {
+        window.electronAPI.onTimerUpdate((data) => {
+          handleTimerUpdate(data);
+        });
+      }
+
+      function handleTimerUpdate(data) {
+        const timer = data.timer;
+        const messages = data.messages;
+
+        if (timer) {
+          if (!hasReceivedData) {
+            hasReceivedData = true;
+            document.getElementById('waiting-message').style.display = 'none';
+            document.getElementById('timer-display').style.display = 'block';
+            document.getElementById('timer-title').style.display = 'block';
+            document.getElementById('timer-notes').style.display = 'block';
+          }
+
+          const isNegative = timer.remainingTime < 0;
+          const absoluteMs = Math.abs(timer.remainingTime);
+          const totalSeconds = Math.floor(absoluteMs / 1000);
+          const minutes = Math.floor(totalSeconds / 60);
+          const seconds = totalSeconds % 60;
+          const timeStr = (isNegative ? '-' : '') + minutes + ':' + seconds.toString().padStart(2, '0');
+
+          document.getElementById('timer-display').textContent = timeStr;
+          document.getElementById('timer-title').textContent = timer.title || 'Timer';
+          document.getElementById('timer-notes').textContent = timer.notes || '';
+
+          const overtimeWarning = document.getElementById('overtime-warning');
+          if (isNegative) {
+            overtimeWarning.classList.add('visible');
+            const currentTime = Date.now();
+            if (currentTime - lastFlashTime >= 10000) {
+              document.body.classList.add('flash');
+              setTimeout(() => document.body.classList.remove('flash'), 500);
+              lastFlashTime = currentTime;
+            }
+          } else {
+            overtimeWarning.classList.remove('visible');
+          }
+
+          const percentageUsed = ((timer.duration - timer.remainingTime) / timer.duration) * 100;
+          let bgColor;
+          if (isNegative || percentageUsed >= 75) {
+            bgColor = 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)';
+          } else if (percentageUsed >= 50) {
+            bgColor = 'linear-gradient(135deg, #eab308 0%, #f97316 100%)';
+          } else {
+            bgColor = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+          }
+          document.body.style.background = bgColor;
+
+          const progressPercent = isNegative ? 100 : Math.min(100, percentageUsed);
+          document.getElementById('progress-fill').style.width = progressPercent + '%';
+        }
+
+        if (messages && messages.length > 0) {
+          const container = document.getElementById('messages-container');
+          container.innerHTML = messages.map(msg =>
+            '<div class="message-banner">📢 ' + msg.text + '</div>'
+          ).join('');
+        } else if (messages && messages.length === 0) {
+          document.getElementById('messages-container').innerHTML = '';
+        }
+      }
+    </script>
+  </body>
+</html>

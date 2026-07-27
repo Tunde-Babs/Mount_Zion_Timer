@@ -1,0 +1,14 @@
+# Secrets for Cloudflare Pages Functions (the backend, functions/), read via
+# `context.env` in local dev by `wrangler pages dev`. This is a SEPARATE file
+# from `.env` — `.env` is only for the Vite frontend's VITE_-prefixed values.
+#
+# Copy to `.dev.vars` and fill in real values for local testing. In production,
+# set these same names as Pages secrets (dashboard or `wrangler pages secret put`)
+# — this file is never deployed.
+
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_PRICE_ID=price_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+
+SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key

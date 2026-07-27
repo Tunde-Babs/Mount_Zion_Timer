@@ -1,0 +1,9 @@
+name = "mount-zion-timer"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# Deliberately no `pages_build_output_dir` here: `wrangler pages deploy dist`
+# (see package.json) passes the directory explicitly, and `wrangler pages dev`
+# needs no directory at all for proxy mode (`dev:full`) — declaring one here
+# makes Wrangler treat local dev as ambiguous between "serve this directory"
+# and "proxy to another dev server", and it refuses to start.
