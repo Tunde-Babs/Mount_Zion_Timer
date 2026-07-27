@@ -43,7 +43,13 @@ export default defineConfig({
     : {
         command: 'npm run dev:full',
         url: baseURL,
-        reuseExistingServer: !process.env.CI,
+        // Always true (not the usual `!process.env.CI`): the e2e workflow starts
+        // dev:full itself, as its own step, specifically to control ordering —
+        // it needs to write .dev.vars with the webhook secret `stripe listen`
+        // just minted *before* wrangler boots. Since GitHub Actions runners are
+        // fresh VMs per job, there's no stale-process risk `!CI` normally guards
+        // against; this just makes Playwright reuse what's already listening.
+        reuseExistingServer: true,
         timeout: 60_000
       }
 });
