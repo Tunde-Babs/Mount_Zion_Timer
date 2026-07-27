@@ -22,7 +22,7 @@ export default function AppHeader({ onOpenSave, onOpenLoad, onOpenTemplates, onO
   const activeRoom = rooms.find((r) => r.id === activeRoomId) || rooms[0];
 
   return (
-    <header className="flex flex-shrink-0 flex-col gap-3 border-b border-slate-200 bg-white/80 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <header className="relative z-30 flex flex-shrink-0 flex-col gap-3 border-b border-slate-200 bg-white/80 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <div className="flex items-center gap-3">
         <Link to="/" className="flex items-center gap-2">
           <div className="rounded-lg bg-brand-600 p-1.5"><Clock className="h-4 w-4 text-white" /></div>
