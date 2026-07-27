@@ -28,16 +28,17 @@ export default function TimerEditModal({ timer, onUpdate, onAdjust, onDelete, on
 
         <div className="space-y-3">
           <div>
-            <label className="label">Timer title</label>
-            <input className="input" placeholder="Enter timer title" value={title} onChange={(e) => setTitle(e.target.value)} onBlur={commitTitle} />
+            <label className="label" htmlFor="timer-edit-title">Timer title</label>
+            <input id="timer-edit-title" className="input" placeholder="Enter timer title" value={title} onChange={(e) => setTitle(e.target.value)} onBlur={commitTitle} />
           </div>
           <div>
-            <label className="label">Notes (optional)</label>
-            <input className="input" placeholder="Shown under the title on the presenter view" value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={commitNotes} />
+            <label className="label" htmlFor="timer-edit-notes">Notes (optional)</label>
+            <input id="timer-edit-notes" className="input" placeholder="Shown under the title on the presenter view" value={notes} onChange={(e) => setNotes(e.target.value)} onBlur={commitNotes} />
           </div>
           <div>
-            <label className="label">Duration (MM:SS)</label>
+            <label className="label" htmlFor="timer-edit-duration">Duration (MM:SS)</label>
             <input
+              id="timer-edit-duration"
               className="input"
               value={durationInput}
               onChange={(e) => setDurationInput(e.target.value)}

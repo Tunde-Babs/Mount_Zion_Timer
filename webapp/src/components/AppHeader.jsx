@@ -30,13 +30,13 @@ export default function AppHeader({ onOpenSave, onOpenLoad, onOpenTemplates, onO
         </Link>
 
         <div className="relative">
-          <button onClick={() => setRoomMenuOpen((v) => !v)} className="btn-secondary btn-sm">
+          <button data-testid="session-switcher-button" onClick={() => setRoomMenuOpen((v) => !v)} className="btn-secondary btn-sm">
             <Users className="h-3.5 w-3.5" /> {activeRoom.name} <ChevronDown className="h-3 w-3" />
           </button>
           {roomMenuOpen && (
-            <div className="absolute left-0 top-full z-20 mt-1 w-56 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl dark:border-white/10 dark:bg-slate-900" onMouseLeave={() => setRoomMenuOpen(false)}>
+            <div data-testid="session-menu" className="absolute left-0 top-full z-20 mt-1 w-56 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl dark:border-white/10 dark:bg-slate-900" onMouseLeave={() => setRoomMenuOpen(false)}>
               {rooms.map((room) => (
-                <div key={room.id} className={`group flex items-center justify-between rounded-lg px-2 py-1.5 text-sm ${room.id === activeRoomId ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'hover:bg-slate-50 dark:hover:bg-white/5'}`}>
+                <div key={room.id} data-testid="session-item" data-room-id={room.id} className={`group flex items-center justify-between rounded-lg px-2 py-1.5 text-sm ${room.id === activeRoomId ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300' : 'hover:bg-slate-50 dark:hover:bg-white/5'}`}>
                   <button className="flex-1 text-left" onClick={() => { setActiveRoomId(room.id); setRoomMenuOpen(false); }}>
                     {room.name}
                   </button>
@@ -47,18 +47,20 @@ export default function AppHeader({ onOpenSave, onOpenLoad, onOpenTemplates, onO
                         if (name?.trim()) renameRoom(room.id, name.trim());
                       }}
                       className="text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                      aria-label="Rename session"
+                      title="Rename session"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
                     {rooms.length > 1 && (
-                      <button onClick={() => deleteRoom(room.id)} className="text-slate-400 hover:text-rose-600">
+                      <button onClick={() => deleteRoom(room.id)} className="text-slate-400 hover:text-rose-600" aria-label="Delete session" title="Delete session">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     )}
                   </div>
                 </div>
               ))}
-              <button onClick={() => { addRoom(); setRoomMenuOpen(false); }} className="mt-1 flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-500/10">
+              <button data-testid="new-session-button" onClick={() => { addRoom(); setRoomMenuOpen(false); }} className="mt-1 flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-500/10">
                 <Plus className="h-3.5 w-3.5" /> New session
               </button>
             </div>

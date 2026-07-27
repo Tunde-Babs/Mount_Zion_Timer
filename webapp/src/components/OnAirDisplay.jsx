@@ -16,7 +16,7 @@ export default function OnAirDisplay({ timer, messages, settings }) {
   const pct = isOver ? 100 : Math.min(100, percentUsed(timer.remainingTime, timer.duration));
 
   return (
-    <div className={`relative flex-shrink-0 bg-gradient-to-br ${gradient} px-6 py-8 text-center text-white`}>
+    <div data-testid="on-air-display" className={`relative flex-shrink-0 bg-gradient-to-br ${gradient} px-6 py-8 text-center text-white`}>
       {isOver && (
         <div className="mb-4 inline-block animate-flash-bg rounded-xl border-2 border-white bg-rose-700 px-6 py-3 text-lg font-bold shadow-xl sm:text-2xl">
           ⚠️ TIME UP — PLEASE ROUND UP ⚠️

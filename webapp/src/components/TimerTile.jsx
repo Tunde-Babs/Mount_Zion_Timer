@@ -24,6 +24,8 @@ export default function TimerTile({ timer, isOnAir, keyHint, settings, onToggle,
       onClick={() => onToggle(timer.id)}
       role="button"
       tabIndex={0}
+      data-testid="timer-tile"
+      data-timer-id={timer.id}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();

@@ -148,7 +148,7 @@ function ScheduleGroup({ icon, label, schedules, loading, onLoad, onDelete }) {
       {!loading && schedules.length === 0 && <p className="text-sm text-slate-400">Nothing saved here yet.</p>}
       <div className="space-y-2">
         {schedules.map((schedule) => (
-          <div key={schedule.id} className="rounded-lg border border-slate-200 p-3 transition-colors hover:border-slate-300 dark:border-white/10 dark:hover:border-white/20">
+          <div key={schedule.id} data-testid="schedule-row" className="rounded-lg border border-slate-200 p-3 transition-colors hover:border-slate-300 dark:border-white/10 dark:hover:border-white/20">
             <div className="flex items-start justify-between">
               <div>
                 <div className="font-semibold">{schedule.name}</div>
@@ -159,7 +159,7 @@ function ScheduleGroup({ icon, label, schedules, loading, onLoad, onDelete }) {
               </div>
               <div className="flex gap-2">
                 <button onClick={() => onLoad(schedule)} className="btn-primary btn-sm">Load</button>
-                <button onClick={() => onDelete(schedule)} className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10">
+                <button onClick={() => onDelete(schedule)} className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10" aria-label="Delete schedule" title="Delete schedule">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
