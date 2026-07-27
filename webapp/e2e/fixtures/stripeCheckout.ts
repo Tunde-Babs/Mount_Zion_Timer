@@ -30,6 +30,16 @@ export async function payWithTestCard(page: Page, { cardNumber = '42424242424242
   const cardholderName = page.getByRole('textbox', { name: 'Cardholder name' });
   if (await cardholderName.count()) await cardholderName.fill('E2E Test');
 
+  // Billing address defaults to "United States", which requires a ZIP — and a
+  // Phone number field is also required. Both are marked [invalid] (empty)
+  // when unfilled, silently blocking submission with no error shown up front —
+  // confirmed via a real run where "Pay" just sat there past its 20s timeout.
+  const zip = page.getByRole('textbox', { name: 'ZIP' });
+  if (await zip.count()) await zip.fill('94103');
+
+  const phone = page.getByRole('textbox', { name: 'Phone number' });
+  if (await phone.count()) await phone.fill('2015550123');
+
   // exact: true matters here — Checkout also has "Pay with Bancontact", "Pay
   // with MB WAY", etc. rows for the other payment methods, all matching a
   // substring "Pay"; the actual submit button's accessible name is just "Pay".
