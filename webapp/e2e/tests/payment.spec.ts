@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { test, expect } from '../fixtures/app';
 import { isProfilePremium } from '../fixtures/supabaseAdmin';
 import { TEST_USER_FILE } from '../global-setup';
+import { fillCheckoutEmail, payWithTestCard, setCustomAmount } from '../fixtures/stripeCheckout';
 
 // This whole suite targets Stripe TEST MODE only (the .dev.vars sk_test_/price/whsec
 // values) via `npm run dev:full`. It additionally needs, running alongside the test
@@ -9,10 +10,6 @@ import { TEST_USER_FILE } from '../global-setup';
 //   stripe listen --forward-to localhost:8788/api/stripe-webhook
 // Without that, Checkout will succeed but the webhook never reaches this machine,
 // so the "premium granted" assertions (K3/K9) will time out.
-//
-// Card-field selectors on Stripe's hosted Checkout page follow the pattern Stripe
-// documents for automating Checkout (docs.stripe.com/testing) — if Stripe changes
-// hosted-Checkout markup, these are the first thing to re-verify against a real run.
 
 function loadTestUser(): { id: string; email: string; password: string } | null {
   if (!fs.existsSync(TEST_USER_FILE)) return null;
@@ -47,12 +44,10 @@ test.describe('Stripe checkout (test mode) @payment', () => {
     await page.waitForURL(/checkout\.stripe\.com/, { timeout: 15000 });
 
     // K2: pay with Stripe's universal test card — no real charge in test mode.
-    await page.fill('input[name="cardnumber"]', '4242424242424242');
-    await page.fill('input[name="exp-date"]', '1234');
-    await page.fill('input[name="cvc"]', '123');
-    const billingName = page.locator('input[name="billingName"]');
-    if (await billingName.count()) await billingName.fill('E2E Test');
-    await page.getByRole('button', { name: /Pay/ }).click();
+    // Logged-in checkout (client_reference_id path) still shows an empty,
+    // required Email field — confirmed via a real failed-run snapshot.
+    await fillCheckoutEmail(page, user.email);
+    await payWithTestCard(page);
 
     await page.waitForURL(/\/upgrade\/success/, { timeout: 20000 });
     await expect(page.getByRole('heading', { name: /unlimited/i })).toBeVisible({ timeout: 15000 });
@@ -90,18 +85,12 @@ test.describe('Stripe checkout (test mode) @payment', () => {
     await page.getByRole('button', { name: /Upgrade — from/ }).click();
     await page.waitForURL(/checkout\.stripe\.com/, { timeout: 15000 });
 
-    // This is Stripe's own "customer chooses price" amount field, enforcing the
-    // custom_unit_amount.minimum set on the Price object — not app code. Selector
-    // is a best-effort guess (no confirmed live run available); if Stripe's hosted
-    // Checkout markup differs, this is the first thing to fix against a real run.
-    const amountInput = page.getByRole('spinbutton').or(page.locator('input[type="number"], input[inputmode="decimal"]')).first();
-    await amountInput.fill('5');
-    await amountInput.blur();
-
-    await page.fill('input[name="cardnumber"]', '4242424242424242');
-    await page.fill('input[name="exp-date"]', '1234');
-    await page.fill('input[name="cvc"]', '123');
-    await page.getByRole('button', { name: /Pay/ }).click();
+    // The "customer chooses price" amount field enforces custom_unit_amount.minimum
+    // on the Price object — not app code. It renders disabled by default (showing
+    // the €20 preset) behind a "Change amount" button; setCustomAmount() handles that.
+    await setCustomAmount(page, '5');
+    await fillCheckoutEmail(page, `k6-${Date.now()}@example.com`);
+    await payWithTestCard(page);
 
     // Whatever the exact message, Stripe must block this — we should never reach
     // our success page for a sub-minimum amount.
