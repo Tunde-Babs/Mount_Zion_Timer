@@ -30,7 +30,10 @@ export async function payWithTestCard(page: Page, { cardNumber = '42424242424242
   const cardholderName = page.getByRole('textbox', { name: 'Cardholder name' });
   if (await cardholderName.count()) await cardholderName.fill('E2E Test');
 
-  await page.getByRole('button', { name: 'Pay', exact: false }).click();
+  // exact: true matters here — Checkout also has "Pay with Bancontact", "Pay
+  // with MB WAY", etc. rows for the other payment methods, all matching a
+  // substring "Pay"; the actual submit button's accessible name is just "Pay".
+  await page.getByRole('button', { name: 'Pay', exact: true }).click();
 }
 
 // The "customer chooses" amount field (custom_unit_amount on the Price) renders
