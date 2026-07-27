@@ -102,15 +102,13 @@ jobs:
       - name: Run e2e suite
         run: npx playwright test
 
-      - name: Upload dev-server / stripe-listen logs (debugging aid on failure)
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: server-logs
-          path: |
-            webapp/dev-full.log
-            webapp/stripe-listen.log
-          retention-days: 7
+      # Deliberately NOT uploading dev-full.log / stripe-listen.log as artifacts:
+      # this repo is public, so any Actions artifact is publicly downloadable —
+      # GitHub's secret masking only scrubs the live log viewer, not the raw
+      # bytes of an uploaded file, and either log could plausibly contain
+      # STRIPE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY in a stack trace/debug
+      # dump. Re-run with tmate (or check the step's live log) if debugging
+      # a failure needs them.
 
       - name: Upload Allure results
         if: ${{ !cancelled() }}
