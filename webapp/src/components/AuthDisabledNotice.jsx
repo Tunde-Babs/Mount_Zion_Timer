@@ -8,7 +8,7 @@ export default function AuthDisabledNotice() {
       <div className="w-full max-w-sm text-center">
         <Link to="/" className="mb-6 flex items-center justify-center gap-2">
           <div className="rounded-lg bg-brand-600 p-1.5"><Clock className="h-4 w-4 text-white" /></div>
-          <span className="font-bold">Mount Zion Timer</span>
+          <span className="font-bold">Platform Timer</span>
         </Link>
         <div className="card p-6">
           <CloudOff className="mx-auto mb-3 h-8 w-8 text-slate-400" />

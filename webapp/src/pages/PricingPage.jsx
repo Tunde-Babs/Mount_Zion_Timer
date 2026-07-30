@@ -36,7 +36,7 @@ export default function PricingPage() {
       <header className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
         <Link to="/" className="flex items-center gap-2">
           <div className="rounded-lg bg-brand-600 p-1.5"><Clock className="h-4 w-4 text-white" /></div>
-          <span className="font-bold">Mount Zion Timer</span>
+          <span className="font-bold">Platform Timer</span>
         </Link>
         <Link to="/app" className="btn-ghost btn-sm"><ArrowLeft className="h-3.5 w-3.5" /> Back to app</Link>
       </header>
@@ -51,7 +51,7 @@ export default function PricingPage() {
           <div className="card p-6 text-center">
             <Sparkles className="mx-auto mb-3 h-8 w-8 text-brand-500" />
             <h2 className="text-lg font-semibold">You're already on Unlimited</h2>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Thanks for supporting Mount Zion Timer.</p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Thanks for supporting Platform Timer.</p>
             <Link to="/app" className="btn-primary btn-md mt-4">Go to the app</Link>
           </div>
         ) : (

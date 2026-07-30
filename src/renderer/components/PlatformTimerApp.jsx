@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Clock, Play, Pause, SkipForward, Plus, Trash2, MessageSquare, Users, Maximize2, Save, FolderOpen, X, Volume2, VolumeX, GripVertical, Keyboard, Zap, AlertTriangle, CheckCircle } from 'lucide-react';
 
-const MountZionTimerApp = () => {
+const PlatformTimerApp = () => {
   const [rooms, setRooms] = useState([{ id: 1, name: 'Room 1', timers: [] }]);
   const [activeRoomId, setActiveRoomId] = useState(1);
   const [messages, setMessages] = useState([]);
@@ -413,7 +413,7 @@ const MountZionTimerApp = () => {
       <div className="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center space-x-4">
           <Clock className="w-6 h-6 text-blue-500" />
-          <h1 className="text-xl font-bold">Mount Zion Timer - Control Panel</h1>
+          <h1 className="text-xl font-bold">Platform Timer - Control Panel</h1>
           <div className="flex items-center space-x-2 ml-8">
             <Users className="w-4 h-4 text-gray-400" />
             <select value={activeRoomId} onChange={(e) => setActiveRoomId(Number(e.target.value))} className="bg-gray-800 border border-gray-700 rounded px-3 py-1 text-sm">
@@ -570,4 +570,4 @@ const MountZionTimerApp = () => {
   );
 };
 
-export default MountZionTimerApp;
+export default PlatformTimerApp;

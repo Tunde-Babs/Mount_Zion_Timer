@@ -13,7 +13,7 @@ function createMainWindow() {
     height: 900,
     minWidth: 1200,
     minHeight: 700,
-    title: 'Mount Zion Timer - Control Panel',
+    title: 'Platform Timer - Control Panel',
     icon: path.join(__dirname, '../../assets/icon.png'),
     webPreferences: {
       nodeIntegration: false,
@@ -63,7 +63,7 @@ function createPresenterWindow() {
     width: targetDisplay.bounds.width,
     height: targetDisplay.bounds.height,
     fullscreen: true,
-    title: 'Mount Zion Timer - Presenter View',
+    title: 'Platform Timer - Presenter View',
     icon: path.join(__dirname, '../../assets/icon.png'),
     webPreferences: {
       nodeIntegration: false,
@@ -158,7 +158,7 @@ ipcMain.handle('get-displays', () => {
 // Storage operations (using simple file-based storage)
 const Store = require('electron-store');
 const store = new Store({
-  name: 'mount-zion-timer-data',
+  name: 'platform-timer-data',
   defaults: {
     schedules: [],
     settings: {

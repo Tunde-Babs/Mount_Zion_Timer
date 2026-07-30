@@ -110,7 +110,7 @@ export default function PresenterPage() {
       ) : (
         <div className="text-center opacity-70">
           <Clock className="mx-auto mb-4 h-16 w-16" />
-          <h2 className="mb-2 text-3xl font-semibold sm:text-4xl">Mount Zion Timer</h2>
+          <h2 className="mb-2 text-3xl font-semibold sm:text-4xl">Platform Timer</h2>
           <p className="text-lg sm:text-xl">Waiting for the control panel to send a timer…</p>
           <p className="mt-1 font-mono text-sm opacity-60">Session {roomCode}</p>
           <p className="mt-6 flex items-center justify-center gap-1.5 text-sm opacity-50"><Maximize2 className="h-4 w-4" /> Click anywhere for fullscreen</p>

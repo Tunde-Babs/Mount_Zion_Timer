@@ -1,4 +1,4 @@
-# Mount Zion Timer
+# Platform Timer
 
 A professional timer application for events, presentations, conferences, and church services.
 
@@ -19,7 +19,7 @@ A professional timer application for events, presentations, conferences, and chu
 ## Project Structure
 
 ```
-mount-zion-timer-app/
+platform-timer-app/
 ├── package.json              # Dependencies and build scripts
 ├── vite.config.js            # Vite bundler configuration
 ├── tailwind.config.js        # Tailwind CSS configuration
@@ -45,7 +45,7 @@ mount-zion-timer-app/
 │       ├── main.jsx        # React entry point
 │       ├── App.jsx         # App component
 │       ├── components/
-│       │   └── MountZionTimerApp.jsx  # Main timer component
+│       │   └── PlatformTimerApp.jsx  # Main timer component
 │       └── styles/
 │           └── index.css   # Tailwind CSS
 │
@@ -66,11 +66,11 @@ mount-zion-timer-app/
 
 ### Step 1: Setup Project in VS Code
 
-1. **Extract the project** to a folder (e.g., `C:\Projects\mount-zion-timer-app`)
+1. **Extract the project** to a folder (e.g., `C:\Projects\platform-timer-app`)
 
 2. **Open in VS Code:**
    - Open VS Code
-   - File → Open Folder → Select `mount-zion-timer-app`
+   - File → Open Folder → Select `platform-timer-app`
 
 3. **Open Terminal in VS Code:**
    - View → Terminal (or press `Ctrl + ~`)
@@ -166,10 +166,10 @@ After building, find your installers in the `release/` folder:
 
 ```
 release/
-├── Mount Zion Timer Setup 2.0.0.exe      # Windows installer
-├── Mount Zion Timer Setup 2.0.0-ia32.exe # Windows 32-bit
-├── Mount Zion Timer-2.0.0.dmg            # macOS installer
-└── Mount Zion Timer-2.0.0.AppImage       # Linux installer
+├── Platform Timer Setup 2.0.0.exe      # Windows installer
+├── Platform Timer Setup 2.0.0-ia32.exe # Windows 32-bit
+├── Platform Timer-2.0.0.dmg            # macOS installer
+└── Platform Timer-2.0.0.AppImage       # Linux installer
 ```
 
 ---
@@ -213,7 +213,7 @@ Make sure you have all three icon files in `assets/`:
 
 ### App won't start after install
 1. Uninstall the old version completely
-2. Delete leftover data: `%APPDATA%\mount-zion-timer-app`
+2. Delete leftover data: `%APPDATA%\platform-timer-app`
 3. Reinstall
 
 ### Presenter view not showing on external monitor

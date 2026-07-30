@@ -1,6 +1,6 @@
 name: E2E Tests
 
-# Playwright suite for Mount Zion Timer (webapp/e2e). Runs against a local
+# Playwright suite for Platform Timer (webapp/e2e). Runs against a local
 # `wrangler pages dev` + Vite stack (the same "staging" target used locally,
 # never production) with Stripe TEST MODE credentials, so the payment suite
 # never touches real money.

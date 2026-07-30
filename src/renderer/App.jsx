@@ -1,8 +1,8 @@
 import React from 'react';
-import MountZionTimerApp from './components/MountZionTimerApp';
+import PlatformTimerApp from './components/PlatformTimerApp';
 
 function App() {
-  return <MountZionTimerApp />;
+  return <PlatformTimerApp />;
 }
 
 export default App;

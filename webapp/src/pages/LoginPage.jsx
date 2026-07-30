@@ -39,7 +39,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <Link to="/" className="mb-6 flex items-center gap-2">
           <div className="rounded-lg bg-brand-600 p-1.5"><Clock className="h-4 w-4 text-white" /></div>
-          <span className="font-bold">Mount Zion Timer</span>
+          <span className="font-bold">Platform Timer</span>
         </Link>
         <div className="card p-6">
           <h1 className="mb-1 text-xl font-bold">Welcome back</h1>

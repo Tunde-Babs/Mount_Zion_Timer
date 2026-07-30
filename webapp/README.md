@@ -1,4 +1,4 @@
-# Mount Zion Timer — Web
+# Platform Timer — Web
 
 A professional, browser-based event timer with a full-screen presenter view, live cross-device sync, and a
 freemium paywall (5 free timers → unlimited for a one-time upgrade, €20 minimum, pay more if you'd like). This is
@@ -78,11 +78,11 @@ silently failing).
 5. In Authentication → Email Templates, the default "Invite user" template is what new paying customers receive to
    set their password; customize it if you like.
 6. Once you have a real domain (see Deployment below), add it under **Authentication → URL Configuration → Redirect
-   URLs** (e.g. `https://mountziontimer.com/**`) — Supabase rejects auth redirects to domains not on this list.
+   URLs** (e.g. `https://platformtimer.com/**`) — Supabase rejects auth redirects to domains not on this list.
 
 ### 2. Stripe (one-time upgrade, €20 minimum — customer can pay more)
 
-1. Create a Stripe account, then **Product catalog → Add product** — "Mount Zion Timer — Unlimited", one-time.
+1. Create a Stripe account, then **Product catalog → Add product** — "Platform Timer — Unlimited", one-time.
    Under pricing, choose **"Customer chooses price"** (not a fixed amount), set a **minimum** of €20 and a
    **preset/suggested** amount of €20 (leave maximum blank). This makes Stripe's own Checkout page show an
    editable amount field, enforced server-side by Stripe — no custom code needed on our end. Copy the resulting
@@ -92,7 +92,7 @@ silently failing).
 3. For local testing, install the [Stripe CLI](https://stripe.com/docs/stripe-cli) and run
    `stripe listen --forward-to localhost:8788/api/stripe-webhook` — it prints a `whsec_...`, put that in
    `STRIPE_WEBHOOK_SECRET` (`.dev.vars`). In production, add a webhook endpoint in the Stripe dashboard pointing at
-   `https://mountziontimer.com/api/stripe-webhook`, subscribed to `checkout.session.completed`.
+   `https://platformtimer.com/api/stripe-webhook`, subscribed to `checkout.session.completed`.
 
 ### 3. Run the full stack locally (frontend + Functions together)
 
@@ -123,7 +123,7 @@ Plain `npm run dev` (port 5174, no `/api/*`) is faster for pure UI iteration whe
 ### 1. Buy the domain
 
 **[Cloudflare Registrar](https://dash.cloudflare.com) → Domain Registration → Register a domain** → search
-`mountziontimer.com` → purchase (at-cost pricing, WHOIS privacy included free, roughly $9–10/year for `.com`).
+`platformtimer.com` → purchase (at-cost pricing, WHOIS privacy included free, roughly $9–10/year for `.com`).
 
 ### 2. Create the Pages project
 
@@ -134,8 +134,14 @@ npx wrangler login          # opens a browser to authorize Wrangler against your
 npm run deploy               # builds (vite build) then runs `wrangler pages deploy dist`
 ```
 
-The first run asks you to name the project (e.g. `mount-zion-timer`) and creates it. You'll get a
-`*.pages.dev` URL immediately — that already works end-to-end (minus custom domain and secrets, next steps).
+The first run asks you to name the project and creates it. You'll get a `*.pages.dev` URL immediately —
+that already works end-to-end (minus custom domain and secrets, next steps).
+
+> **Note on the project name.** The live Pages project is still called `mount-zion-timer` — the product was
+> renamed to Platform Timer after launch, and Cloudflare has no way to rename an existing Pages project. Keeping
+> it avoids re-creating the project and re-entering every secret, and the name is only ever visible in the
+> internal `*.pages.dev` hostname, never to users. That's why `--project-name` below (and in `package.json`'s
+> `deploy` script and `wrangler.toml`) still reads `mount-zion-timer`. Leave it alone.
 
 *(Alternative: connect this repo on GitHub and link it in the Cloudflare dashboard under Workers & Pages → Create
 → Pages → Connect to Git, with build command `npm run build` and build output directory `dist`. That gets you
@@ -160,23 +166,23 @@ public anyway) under the Pages project's **Settings → Environment variables** 
 
 ### 4. Attach the domain
 
-Pages project → **Custom domains → Set up a custom domain** → enter `mountziontimer.com` (and `www.mountziontimer.com`
+Pages project → **Custom domains → Set up a custom domain** → enter `platformtimer.com` (and `www.platformtimer.com`
 if you want that too). Since the domain's already on Cloudflare, DNS records get added automatically — no manual
 DNS editing, and SSL provisions itself within a few minutes.
 
 ### 5. Point Stripe and Supabase at the real domain
 
-- Stripe dashboard → **Developers → Webhooks → Add endpoint** → `https://mountziontimer.com/api/stripe-webhook`,
+- Stripe dashboard → **Developers → Webhooks → Add endpoint** → `https://platformtimer.com/api/stripe-webhook`,
   event `checkout.session.completed`. Copy its signing secret and update the `STRIPE_WEBHOOK_SECRET` Pages secret
   (step 3) — it's different from your local `stripe listen` one.
-- Supabase → **Authentication → URL Configuration** → add `https://mountziontimer.com/**` to Redirect URLs (see
+- Supabase → **Authentication → URL Configuration** → add `https://platformtimer.com/**` to Redirect URLs (see
   step 6 in the Supabase setup above).
 - Supabase → **Authentication → Settings → SMTP Settings**: connect a real email provider (Resend, Postmark,
   SendGrid…) before relying on this in production — Supabase's built-in mailer is rate-limited to a handful of
   emails/hour, which is fine for testing but will silently fail to deliver "set your password" emails to new
   paying customers once you get more than a couple of signups per hour.
 
-That's the whole stack live: `mountziontimer.com` → Cloudflare Pages (frontend + Functions) → Supabase (data/auth)
+That's the whole stack live: `platformtimer.com` → Cloudflare Pages (frontend + Functions) → Supabase (data/auth)
 → Stripe (payment) — no other services, no other bills beyond the domain and whatever Stripe/Supabase usage costs
 you accrue as real customers show up.
 

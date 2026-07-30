@@ -1,3 +1,6 @@
+# Legacy project name, deliberately kept: the product is now Platform Timer, but
+# Cloudflare can't rename an existing Pages project and re-creating it would mean
+# re-entering every secret. Only ever visible in the internal *.pages.dev hostname.
 name = "mount-zion-timer"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]

@@ -1,7 +1,7 @@
 {
-  "name": "mount-zion-timer-app",
+  "name": "platform-timer-app",
   "version": "2.0.0",
-  "description": "Professional Mount Zion Timer Application for Events and Presentations",
+  "description": "Professional Platform Timer Application for Events and Presentations",
   "author": "Babs <tunde.ajala@gmail.com>",
   "license": "MIT",
   "main": "src/main/index.js",
@@ -20,8 +20,8 @@
     "dist:all": "electron-builder --win --mac --linux"
   },
   "build": {
-    "appId": "com.mountziontimer.app",
-    "productName": "Mount Zion Timer",
+    "appId": "com.platformtimer.app",
+    "productName": "Platform Timer",
     "files": [
       "dist/**/*",
       "src/main/**/*",

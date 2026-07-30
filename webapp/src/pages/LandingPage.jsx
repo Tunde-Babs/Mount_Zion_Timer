@@ -22,7 +22,7 @@ export default function LandingPage() {
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <div className="flex items-center gap-2">
           <div className="rounded-lg bg-brand-600 p-1.5"><Clock className="h-4 w-4 text-white" /></div>
-          <span className="font-bold">Mount Zion Timer</span>
+          <span className="font-bold">Platform Timer</span>
         </div>
         <nav className="flex items-center gap-2">
           <ThemeToggle />
@@ -94,7 +94,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-400 dark:border-white/10">
-        © {new Date().getFullYear()} Mount Zion Timer. Built for services, conferences, and events.
+        © {new Date().getFullYear()} Platform Timer. Built for services, conferences, and events.
       </footer>
     </div>
   );

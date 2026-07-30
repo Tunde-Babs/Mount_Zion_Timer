@@ -1,8 +1,8 @@
 {
-  "name": "mount-zion-timer-web",
+  "name": "platform-timer-web",
   "version": "3.0.0",
   "private": true,
-  "description": "Mount Zion Timer — professional web-based event timer with presenter view, cloud sync, and a freemium paywall.",
+  "description": "Platform Timer — professional web-based event timer with presenter view, cloud sync, and a freemium paywall.",
   "type": "module",
   "scripts": {
     "dev": "vite",

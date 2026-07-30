@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Mount Zion Timer',
-        short_name: 'MZ Timer',
+        name: 'Platform Timer',
+        short_name: 'PT Timer',
         description: 'Professional event & service timer with presenter view.',
         theme_color: '#4f46e5',
         background_color: '#0b0f1a',

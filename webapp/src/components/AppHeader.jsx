@@ -26,7 +26,7 @@ export default function AppHeader({ onOpenSave, onOpenLoad, onOpenTemplates, onO
       <div className="flex items-center gap-3">
         <Link to="/" className="flex items-center gap-2">
           <div className="rounded-lg bg-brand-600 p-1.5"><Clock className="h-4 w-4 text-white" /></div>
-          <span className="hidden font-bold sm:inline">Mount Zion Timer</span>
+          <span className="hidden font-bold sm:inline">Platform Timer</span>
         </Link>
 
         <div className="relative">

@@ -1,4 +1,4 @@
--- Mount Zion Timer — Supabase schema
+-- Platform Timer — Supabase schema
 -- Run this once in the Supabase SQL editor (Project > SQL Editor > New query).
 --
 -- Design note: only account/plan status and the saved-schedule library live
