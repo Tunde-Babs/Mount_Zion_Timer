@@ -35,7 +35,11 @@ export async function onRequestPost({ request, env }) {
       } else {
         const email = session.customer_details?.email || session.customer_email;
         const origin = new URL(request.url).origin;
-        const userId = await ensurePremiumAccountForEmail(env, email, `${origin}/app`);
+        // Land them on /reset-password, not /app: invited users have no password,
+        // and dropping them straight into the app means they never set one and
+        // can't sign in on their next visit. /reset-password sets one and then
+        // forwards to /app.
+        const userId = await ensurePremiumAccountForEmail(env, email, `${origin}/reset-password`);
         console.log(`Granted premium to new/matched account ${userId} (${email})`);
       }
     }
