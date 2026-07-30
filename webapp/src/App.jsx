@@ -8,6 +8,7 @@ import UpgradeModal from './components/UpgradeModal';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import Dashboard from './pages/Dashboard';
 import PresenterPage from './pages/PresenterPage';
 import AccountPage from './pages/AccountPage';
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/app" element={<Dashboard />} />
         <Route path="/present/:roomCode" element={<PresenterPage />} />

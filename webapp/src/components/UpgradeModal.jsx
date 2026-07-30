@@ -66,7 +66,7 @@ export default function UpgradeModal() {
               <input
                 type="email"
                 className="input"
-                placeholder="you@church.org"
+                placeholder="you@yourteam.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />

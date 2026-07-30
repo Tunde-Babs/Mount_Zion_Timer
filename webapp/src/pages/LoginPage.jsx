@@ -6,13 +6,14 @@ import { useUIStore } from '../store/useUIStore';
 import AuthDisabledNotice from '../components/AuthDisabledNotice';
 
 export default function LoginPage() {
-  const { enabled, signInWithPassword, sendMagicLink } = useAuth();
+  const { enabled, signInWithPassword, sendMagicLink, sendPasswordReset } = useAuth();
   const showToast = useUIStore((s) => s.showToast);
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [magicSent, setMagicSent] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   if (!enabled) return <AuthDisabledNotice />;
 
@@ -34,6 +35,15 @@ export default function LoginPage() {
     setMagicSent(true);
   };
 
+  const forgotPassword = async () => {
+    if (!email) return showToast('Enter your email first.', { type: 'error' });
+    setLoading(true);
+    const { error } = await sendPasswordReset(email);
+    setLoading(false);
+    if (error) return showToast(error.message, { type: 'error' });
+    setResetSent(true);
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface-light px-4 dark:bg-surface-dark">
       <div className="w-full max-w-sm">
@@ -45,20 +55,35 @@ export default function LoginPage() {
           <h1 className="mb-1 text-xl font-bold">Welcome back</h1>
           <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">Sign in to sync your schedules across devices.</p>
 
-          {magicSent ? (
+          {magicSent || resetSent ? (
             <div className="rounded-lg bg-emerald-50 p-4 text-sm text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
               <Mail className="mb-2 h-5 w-5" />
-              Check <strong>{email}</strong> for a sign-in link.
+              {magicSent ? (
+                <>Check <strong>{email}</strong> for a sign-in link.</>
+              ) : (
+                <>Check <strong>{email}</strong> for a link to set a new password.</>
+              )}
             </div>
           ) : (
             <form onSubmit={submit} className="space-y-3">
               <div>
                 <label className="label">Email</label>
-                <input type="email" required className="input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@church.org" />
+                <input type="email" required className="input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@yourteam.com" />
               </div>
               <div>
                 <label className="label">Password</label>
                 <input type="password" required className="input" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+                {/* Also the "set your first password" path: customers created by the
+                    Stripe webhook's invite have no password and would otherwise be
+                    stuck on the magic link forever. */}
+                <button
+                  type="button"
+                  onClick={forgotPassword}
+                  disabled={loading}
+                  className="mt-1.5 text-xs text-slate-500 hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400"
+                >
+                  Forgot or never set a password?
+                </button>
               </div>
               <button type="submit" disabled={loading} className="btn-primary btn-md w-full">
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Sign in

@@ -51,6 +51,12 @@ export function AuthProvider({ children }) {
       supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/app` } }),
     sendMagicLink: (email) =>
       supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${window.location.origin}/app` } }),
+    // Customers created by the Stripe webhook's `inviteUserByEmail` have no
+    // password at all, so this is both "reset a forgotten password" and "set
+    // your first one" — /reset-password handles either case identically.
+    sendPasswordReset: (email) =>
+      supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` }),
+    updatePassword: (password) => supabase.auth.updateUser({ password }),
     signOut: () => supabase.auth.signOut()
   };
 

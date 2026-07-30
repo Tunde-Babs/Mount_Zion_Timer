@@ -72,7 +72,7 @@ export default function PricingPage() {
               {!user && (
                 <div className="mb-4">
                   <label className="label">Email for your new account</label>
-                  <input type="email" className="input" placeholder="you@church.org" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <input type="email" className="input" placeholder="you@yourteam.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
               )}
               <button onClick={handleUpgrade} disabled={loading || (!user && !email)} className="btn-primary btn-lg w-full">

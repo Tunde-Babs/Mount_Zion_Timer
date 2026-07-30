@@ -1,15 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Clock, ArrowLeft, Sparkles, LogOut, Loader2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, LogOut, Loader2, KeyRound } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useUIStore } from '../store/useUIStore';
 import AuthDisabledNotice from '../components/AuthDisabledNotice';
 import { UPGRADE_PRICE_LABEL } from '../lib/plan';
 
 export default function AccountPage() {
-  const { enabled, user, profile, isPremium, loading, signOut } = useAuth();
+  const { enabled, user, profile, isPremium, loading, signOut, updatePassword } = useAuth();
   const showToast = useUIStore((s) => s.showToast);
   const navigate = useNavigate();
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
 
   useEffect(() => {
     if (enabled && !loading && !user) navigate('/login');
@@ -28,6 +31,18 @@ export default function AccountPage() {
     await signOut();
     showToast('Signed out.');
     navigate('/');
+  };
+
+  const savePassword = async (e) => {
+    e.preventDefault();
+    if (password !== confirm) return showToast('Those passwords don’t match.', { type: 'error' });
+    setSavingPassword(true);
+    const { error } = await updatePassword(password);
+    setSavingPassword(false);
+    if (error) return showToast(error.message, { type: 'error' });
+    setPassword('');
+    setConfirm('');
+    showToast('Password saved.');
   };
 
   return (
@@ -63,6 +78,46 @@ export default function AccountPage() {
                 <Link to="/pricing" className="btn-primary btn-sm">Upgrade</Link>
               </>
             )}
+          </div>
+
+          {/* Deliberately worded to cover both cases: customers created by the
+              Stripe webhook's inviteUserByEmail arrive here with no password at
+              all, and the client has no reliable way to tell them apart from
+              someone changing an existing one. */}
+          <div className="mb-5 border-t border-slate-200 pt-5 dark:border-white/10">
+            <div className="mb-1 font-semibold">Password</div>
+            <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
+              Set one, or change the one you have. Signing in with a password works on any device.
+            </p>
+            <form onSubmit={savePassword} className="space-y-3">
+              <div>
+                <label className="label">New password</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  className="input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="At least 8 characters"
+                />
+              </div>
+              <div>
+                <label className="label">Confirm password</label>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  className="input"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  placeholder="Type it again"
+                />
+              </div>
+              <button type="submit" disabled={savingPassword} className="btn-secondary btn-md w-full">
+                {savingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <KeyRound className="h-4 w-4" />} Save password
+              </button>
+            </form>
           </div>
 
           <button onClick={handleSignOut} className="btn-secondary btn-md w-full">

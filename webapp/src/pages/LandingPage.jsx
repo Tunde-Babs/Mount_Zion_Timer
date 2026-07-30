@@ -10,7 +10,7 @@ import { FREE_TIMER_LIMIT, UPGRADE_PRICE_LABEL } from '../lib/plan';
 const FEATURES = [
   { icon: Cast, title: 'Full-screen presenter view', desc: 'Send a clean countdown to any projector, TV, or second device — no cables, no extra software.' },
   { icon: Smartphone, title: 'Control from your phone', desc: 'Run the show from a tablet in the back row while the timer displays on stage.' },
-  { icon: LayoutTemplate, title: 'Ready-made agendas', desc: 'Sunday service, Bible study, conference day — start from a template and adjust in seconds.' },
+  { icon: LayoutTemplate, title: 'Ready-made agendas', desc: 'Conference track, Sunday service, workshop day — start from a template and adjust in seconds.' },
   { icon: Volume2, title: 'Configurable audio cues', desc: 'Gentle, chime, or urgent alerts at 60s, 30s, and zero — so speakers feel it, not just see it.' },
   { icon: Cloud, title: 'Cloud-synced schedules', desc: 'Save your running orders once, reuse them from any device, every week.' },
   { icon: Keyboard, title: 'Built for live operators', desc: 'Full keyboard control, drag-and-drop reordering, and an undo on every delete.' }
@@ -37,10 +37,10 @@ export default function LandingPage() {
           <Sparkles className="h-3 w-3" /> No install. No subscription. Just a link.
         </span>
         <h1 className="text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
-          Keep every service<br className="hidden sm:block" /> running <span className="text-brand-600 dark:text-brand-400">on time</span>.
+          Keep every session<br className="hidden sm:block" /> running <span className="text-brand-600 dark:text-brand-400">on time</span>.
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-500 dark:text-slate-400">
-          A professional countdown timer for church services, conferences, and events — with a distraction-free
+          A professional countdown timer for conferences, services, and live events — with a distraction-free
           presenter screen your speakers can actually see.
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -94,7 +94,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-400 dark:border-white/10">
-        © {new Date().getFullYear()} Platform Timer. Built for services, conferences, and events.
+        © {new Date().getFullYear()} Platform Timer. Built for conferences, services, and live events.
       </footer>
     </div>
   );
