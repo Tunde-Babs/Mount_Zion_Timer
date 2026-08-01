@@ -25,9 +25,14 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
-    supabase.auth.getSession().then(({ data }) => {
+    // `loading` has to stay true until the PROFILE resolves, not just the
+    // session. Awaiting matters: firing loadProfile without it flips loading
+    // false while profile is still null, so isPremium reads false for a beat
+    // and paying customers watch the free-plan badge and upgrade banner flash
+    // on every refresh.
+    supabase.auth.getSession().then(async ({ data }) => {
       setSession(data.session);
-      if (data.session?.user) loadProfile(data.session.user.id);
+      if (data.session?.user) await loadProfile(data.session.user.id);
       setLoading(false);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
