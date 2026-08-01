@@ -54,7 +54,7 @@ export default function Dashboard() {
   const markAlertPlayed = useTimerStore((s) => s.markAlertPlayed);
 
   const activeRoom = rooms.find((r) => r.id === activeRoomId) || rooms[0];
-  const { isPremium } = useAuth();
+  const { isPremium, loading: planLoading } = useAuth();
   const showToast = useUIStore((s) => s.showToast);
   const showConfirm = useUIStore((s) => s.showConfirm);
   const openUpgradeModal = useUIStore((s) => s.openUpgradeModal);
@@ -117,13 +117,16 @@ export default function Dashboard() {
   // ── Keyboard shortcuts ───────────────────────────────────────────────
   const handleAddTimer = useCallback(
     (preset) => {
-      if (isAtFreeLimit(rooms, isPremium)) {
+      // Don't gate while the plan is still unknown — blocking a paying customer
+      // is worse than letting a free user add one extra during the brief load.
+      // The cap is a client-side UX nudge, not a security boundary.
+      if (!planLoading && isAtFreeLimit(rooms, isPremium)) {
         openUpgradeModal();
         return;
       }
       addTimer(preset);
     },
-    [rooms, isPremium, addTimer, openUpgradeModal]
+    [rooms, isPremium, planLoading, addTimer, openUpgradeModal]
   );
 
   useEffect(() => {
@@ -230,7 +233,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {!isPremium && remaining <= 3 && activeRoom.timers.length > 0 && (
+            {!planLoading && !isPremium && remaining <= 3 && activeRoom.timers.length > 0 && (
               <button
                 onClick={() => openUpgradeModal()}
                 className="mb-4 flex w-full items-center justify-between rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-left text-sm text-amber-800 transition-colors hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300"

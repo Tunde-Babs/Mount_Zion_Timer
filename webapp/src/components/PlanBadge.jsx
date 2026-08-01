@@ -7,10 +7,17 @@ import { useUIStore } from '../store/useUIStore';
 import { countTotalTimers, FREE_TIMER_LIMIT } from '../lib/plan';
 
 export default function PlanBadge() {
-  const { isPremium } = useAuth();
+  const { isPremium, loading } = useAuth();
   const rooms = useTimerStore((s) => s.rooms);
   const openUpgradeModal = useUIStore((s) => s.openUpgradeModal);
   const used = countTotalTimers(rooms);
+
+  // Until the profile resolves we genuinely don't know the plan, and guessing
+  // "free" tells paying customers the wrong thing. A same-width skeleton keeps
+  // the header from reflowing when the real badge arrives.
+  if (loading) {
+    return <span className="pill w-36 animate-pulse bg-slate-100 dark:bg-white/10" aria-hidden="true" />;
+  }
 
   if (isPremium) {
     return (
