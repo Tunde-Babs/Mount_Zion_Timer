@@ -23,7 +23,8 @@ test.describe('Stripe checkout (test mode) @payment', () => {
     if (!user) return;
 
     await page.goto('/login');
-    await page.getByPlaceholder('you@church.org').fill(user.email);
+    // By input type rather than placeholder copy — see freemium-gate.spec.ts.
+    await page.locator('input[type="email"]').fill(user.email);
     await page.getByPlaceholder('••••••••').fill(user.password);
     await page.getByRole('button', { name: 'Sign in' }).click();
     await expect(page).toHaveURL(/\/app$/);

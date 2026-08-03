@@ -31,7 +31,10 @@ test.describe('Freemium gating', () => {
     await addTimerFromPreset(page);
 
     await expect(page.getByRole('heading', { name: 'Go Unlimited' })).toBeVisible();
-    await expect(page.getByPlaceholder('you@church.org')).toBeVisible();
+    // Targeted by input type, not placeholder text: the placeholder is marketing
+    // copy and changing it (church.org -> yourteam.com) silently broke this test.
+    // There's exactly one email input in the modal.
+    await expect(page.locator('input[type="email"]')).toBeVisible();
     // Upgrade button starts disabled until an email is entered.
     await expect(page.getByRole('button', { name: /Upgrade — from/ })).toBeDisabled();
   });
