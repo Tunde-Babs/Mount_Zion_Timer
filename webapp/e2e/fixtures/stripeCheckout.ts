@@ -20,25 +20,40 @@ export async function fillCheckoutEmail(page: Page, email: string) {
 }
 
 export async function payWithTestCard(page: Page, { cardNumber = '4242424242424242', expiry = '1234', cvc = '123' } = {}) {
-  const cardRadio = page.getByRole('radio', { name: 'Card' });
-  if (await cardRadio.count()) await cardRadio.check({ force: true }).catch(() => {});
+  // Select the Card accordion row by id. Its accessible name ("Card") depends on
+  // the row's rendered label, which shifts as Stripe adds payment methods; the id
+  // has been stable. Errors here are NOT swallowed: an earlier version did
+  // `.catch(() => {})`, so a failed selection surfaced as an inexplicable 30s
+  // timeout on the card-number fill instead of pointing at the real cause.
+  const cardRadio = page.locator('#payment-method-accordion-item-title-card');
+  if (await cardRadio.count()) {
+    await cardRadio.check({ force: true });
+  }
 
-  await page.getByRole('textbox', { name: 'Card number' }).fill(cardNumber);
-  await page.getByRole('textbox', { name: 'Expiration' }).fill(expiry);
-  await page.getByRole('textbox', { name: 'CVC' }).fill(cvc);
+  // Card fields are injected only after the row expands, so wait for the first
+  // one explicitly rather than letting a bare fill() time out ambiguously.
+  await page.locator('#cardNumber').waitFor({ state: 'visible', timeout: 15000 });
 
-  const cardholderName = page.getByRole('textbox', { name: 'Cardholder name' });
+  await page.locator('#cardNumber').fill(cardNumber);
+  await page.locator('#cardExpiry').fill(expiry);
+  await page.locator('#cardCvc').fill(cvc);
+
+  const cardholderName = page.locator('#billingName');
   if (await cardholderName.count()) await cardholderName.fill('E2E Test');
 
   // Billing address defaults to "United States", which requires a ZIP — and a
   // Phone number field is also required. Both are marked [invalid] (empty)
   // when unfilled, silently blocking submission with no error shown up front —
   // confirmed via a real run where "Pay" just sat there past its 20s timeout.
-  const zip = page.getByRole('textbox', { name: 'ZIP' });
-  if (await zip.count()) await zip.fill('94103');
+  // Both stay conditional: which of these render depends on #billingCountry,
+  // which Stripe defaults from the session. A 2026-08-03 capture against a
+  // EUR price showed neither present, while earlier US-defaulted runs required
+  // both — so presence is checked rather than assumed in either direction.
+  const zip = page.locator('#billingPostalCode').or(page.getByRole('textbox', { name: 'ZIP' }));
+  if (await zip.count()) await zip.first().fill('94103');
 
-  const phone = page.getByRole('textbox', { name: 'Phone number' });
-  if (await phone.count()) await phone.fill('2015550123');
+  const phone = page.locator('#phoneNumber').or(page.getByRole('textbox', { name: 'Phone number' }));
+  if (await phone.count()) await phone.first().fill('2015550123');
 
   // exact: true matters here — Checkout also has "Pay with Bancontact", "Pay
   // with MB WAY", etc. rows for the other payment methods, all matching a
