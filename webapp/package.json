@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "deploy": "npm run build && wrangler pages deploy dist --project-name=mount-zion-timer",
     "create-admin": "node scripts/createAdmin.js",
+    "icons": "node scripts/generate-icons.cjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
