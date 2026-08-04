@@ -86,6 +86,12 @@ jobs:
           STRIPE_WEBHOOK_SECRET=${{ env.STRIPE_WEBHOOK_SECRET }}
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Intentionally has no secret behind it, so this resolves to empty and
+          # global-setup.ts falls back to a fresh e2e+<timestamp>@example.com per
+          # run. Do NOT set this to a real address: paying with a fixed email
+          # enrols it in Stripe Link, after which every subsequent run loads
+          # Checkout behind Link's OTP modal and the @payment suite can never
+          # reach the card form. That cost a week of red nightlies once already.
           E2E_TEST_EMAIL=${{ secrets.E2E_TEST_EMAIL }}
           E2E_TEST_PASSWORD=${{ secrets.E2E_TEST_PASSWORD }}
           EOF
@@ -119,19 +125,22 @@ jobs:
             exit 1
           }
 
-      # Split into two steps so that a Stripe redesign doesn't mark the whole
-      # nightly red. Everything that tests THIS codebase is blocking; the suite
-      # that drives Stripe's hosted Checkout is reported but not fatal.
-      - name: Run core e2e suite (blocking)
+      # Split into two steps for signal, not severity — both are blocking. A core
+      # failure means our code broke; a @payment failure usually means something
+      # changed on Stripe's hosted Checkout. Knowing which before opening the log
+      # is worth the extra step.
+      - name: Run core e2e suite
         run: npm run test:e2e:no-payment
 
-      # @payment drives checkout.stripe.com, whose DOM changes without notice and
-      # has broken this suite twice already (c062634, 43d1e2f). Those failures say
-      # nothing about our code, and a nightly that always fails is a nightly
-      # nobody reads — so they land in the Allure report without failing the run.
-      # Check that report periodically; this is muted, not fixed.
-      - name: Run @payment suite (non-blocking — Stripe-hosted UI)
-        continue-on-error: true
+      # Ran with continue-on-error from 2026-08-03 while this suite was broken,
+      # then re-armed on 2026-08-04 after a fully green run. The cause was never
+      # Stripe's DOM: "Save my information for faster checkout" is on by default,
+      # so the first successful run enrolled the fixed E2E_TEST_EMAIL in Stripe
+      # Link, and every run after that loaded Checkout behind Link's "Confirm
+      # it's you" OTP modal, which covers the card form entirely. Fixed by
+      # unchecking that box (see e2e/fixtures/stripeCheckout.ts) and dropping the
+      # E2E_TEST_EMAIL secret so each run gets a fresh address Link doesn't know.
+      - name: Run @payment suite (Stripe-hosted UI)
         run: npx playwright test --grep @payment
 
       # Deliberately NOT uploading dev-full.log / stripe-listen.log as artifacts:
