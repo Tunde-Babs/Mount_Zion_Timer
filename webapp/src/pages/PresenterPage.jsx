@@ -86,13 +86,17 @@ export default function PresenterPage() {
       style={{ background: bg, cursor: 'none' }}
     >
       {isOver && (
-        <div className="absolute left-1/2 top-[12%] -translate-x-1/2 animate-pulse rounded-2xl border-4 border-white bg-rose-700 px-10 py-6 text-center text-3xl font-extrabold shadow-2xl sm:text-5xl">
+        // Flows above the countdown on narrow screens and only floats from sm: up.
+        // Absolutely positioned at every width, this wrapped to five lines on a
+        // phone and sat straight on top of the timer — invisible on a projector,
+        // where there's room to spare.
+        <div className="mb-6 max-w-[92%] animate-pulse rounded-2xl border-4 border-white bg-rose-700 px-6 py-4 text-center text-xl font-extrabold shadow-2xl sm:absolute sm:left-1/2 sm:top-[12%] sm:mb-0 sm:max-w-none sm:-translate-x-1/2 sm:px-10 sm:py-6 sm:text-5xl">
           ⚠️ TIME UP<br />PLEASE ROUND UP ⚠️
         </div>
       )}
 
       {state?.messages?.length > 0 && (
-        <div className="absolute top-8 flex w-[90%] flex-col items-center gap-3">
+        <div className="mb-4 flex w-[92%] flex-col items-center gap-2 sm:absolute sm:top-8 sm:mb-0 sm:w-[90%] sm:gap-3">
           {state.messages.map((msg) => (
             <div key={msg.id} className="animate-pulse rounded-2xl bg-amber-400 px-8 py-4 text-center text-2xl font-semibold text-slate-900 shadow-2xl sm:text-4xl">
               📢 {msg.text}
