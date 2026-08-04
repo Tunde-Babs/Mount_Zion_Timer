@@ -111,7 +111,26 @@ export default function Dashboard() {
   }, [activeRoom.roomCode]);
 
   useEffect(() => {
-    publisherRef.current?.publish({ timer: onAirTimer || null, messages: visibleMessages, settings, roomName: activeRoom.name });
+    const publish = () => {
+      // Only the visible tab publishes. Zustand's persist rehydrates at load and
+      // never syncs between tabs, so a second app tab left open holds whatever
+      // the schedule looked like when IT loaded — and was broadcasting that onto
+      // the same room channel, fighting the real tab. The presenter took whichever
+      // arrived last, so a projector would flip between the live schedule and a
+      // stale one (classically an untitled 10:00 timer) with no obvious cause.
+      if (document.visibilityState !== 'visible') return;
+      publisherRef.current?.publish({ timer: onAirTimer || null, messages: visibleMessages, settings, roomName: activeRoom.name });
+    };
+
+    publish();
+
+    // Publish again the instant this tab regains focus, so the presenter is
+    // corrected immediately instead of waiting for the next state change. Safe to
+    // go quiet while hidden: the presenter reconstructs the countdown from
+    // wall-clock time since the last payload (see PresenterPage), and nothing can
+    // be changed in a backgrounded tab without focusing it first.
+    document.addEventListener('visibilitychange', publish);
+    return () => document.removeEventListener('visibilitychange', publish);
   }, [onAirTimer, visibleMessages, settings, activeRoom.name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Keyboard shortcuts ───────────────────────────────────────────────
