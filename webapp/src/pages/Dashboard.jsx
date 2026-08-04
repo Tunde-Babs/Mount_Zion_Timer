@@ -111,6 +111,19 @@ export default function Dashboard() {
   }, [activeRoom.roomCode]);
 
   useEffect(() => {
+    const currentState = () => ({
+      timer: onAirTimer || null,
+      messages: visibleMessages,
+      settings,
+      roomName: activeRoom.name
+    });
+
+    // Answer a joining presenter immediately, and deliberately WITHOUT the
+    // visibility check below: someone opening the presenter link shouldn't have
+    // to wait for this tab to be focused. Replying costs one message and only
+    // happens when asked.
+    publisherRef.current?.onStateRequest(() => publisherRef.current?.publish(currentState()));
+
     const publish = () => {
       // Only the visible tab publishes. Zustand's persist rehydrates at load and
       // never syncs between tabs, so a second app tab left open holds whatever
@@ -119,7 +132,7 @@ export default function Dashboard() {
       // arrived last, so a projector would flip between the live schedule and a
       // stale one (classically an untitled 10:00 timer) with no obvious cause.
       if (document.visibilityState !== 'visible') return;
-      publisherRef.current?.publish({ timer: onAirTimer || null, messages: visibleMessages, settings, roomName: activeRoom.name });
+      publisherRef.current?.publish(currentState());
     };
 
     publish();
