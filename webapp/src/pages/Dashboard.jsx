@@ -18,6 +18,12 @@ import SettingsModal from '../components/SettingsModal';
 import ShortcutsModal from '../components/ShortcutsModal';
 import ShareRoomModal from '../components/ShareRoomModal';
 
+// Floor on how often unchanged state is re-broadcast to presenter views. Every
+// message is fanned out to every connected viewer, so this multiplies by the
+// audience — raise it to cut Realtime usage further, lower it only if dropped
+// messages become a visible problem.
+const PUBLISH_HEARTBEAT_MS = 1000;
+
 const QUICK_PRESETS = [
   { label: '1 min', duration: 60000 },
   { label: '2 min', duration: 120000 },
@@ -68,6 +74,8 @@ export default function Dashboard() {
 
   const intervalRef = useRef(null);
   const publisherRef = useRef(null);
+  const lastPublishRef = useRef(0);
+  const lastSignatureRef = useRef('');
   const lastTickRef = useRef(Date.now());
 
   const onAirTimer = activeRoom.timers[0];
@@ -133,9 +141,34 @@ export default function Dashboard() {
       // stale one (classically an untitled 10:00 timer) with no obvious cause.
       if (document.visibilityState !== 'visible') return;
       publisherRef.current?.publish(currentState());
+      lastPublishRef.current = Date.now();
     };
 
-    publish();
+    // The ticking loop re-runs this effect ~10x/second, and Realtime fans every
+    // message out to EVERY connected presenter — so a dozen phones watching turns
+    // 10 msg/s into 150 deliveries/s. Almost all of it is redundant: the presenter
+    // recomputes the countdown locally from wall-clock time since the payload's
+    // ts, so intermediate remainingTime values tell it nothing it can't derive.
+    //
+    // So publish immediately when something a viewer would actually notice
+    // changes — start/pause, a different timer, an on-screen message — and
+    // otherwise fall back to a 1s heartbeat. The heartbeat isn't needed for
+    // accuracy; it's insurance against a dropped message leaving the presenter
+    // showing a timer that has since been paused.
+    const signature = JSON.stringify({
+      id: onAirTimer?.id ?? null,
+      isRunning: onAirTimer?.isRunning ?? null,
+      title: onAirTimer?.title ?? null,
+      notes: onAirTimer?.notes ?? null,
+      duration: onAirTimer?.duration ?? null,
+      messages: visibleMessages.map((m) => `${m.id}:${m.text}`),
+      roomName: activeRoom.name,
+      settings
+    });
+    const meaningfulChange = signature !== lastSignatureRef.current;
+    if (meaningfulChange) lastSignatureRef.current = signature;
+
+    if (meaningfulChange || Date.now() - lastPublishRef.current >= PUBLISH_HEARTBEAT_MS) publish();
 
     // Publish again the instant this tab regains focus, so the presenter is
     // corrected immediately instead of waiting for the next state change. Safe to
