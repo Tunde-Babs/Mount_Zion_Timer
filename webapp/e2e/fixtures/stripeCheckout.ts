@@ -70,6 +70,15 @@ export async function payWithTestCard(page: Page, { cardNumber = '42424242424242
   const phone = page.locator('#phoneNumber').or(page.getByRole('textbox', { name: 'Phone number' }));
   if (await phone.count()) await phone.first().fill('2015550123');
 
+  // Opt out of Link enrolment before paying. "Save my information for faster
+  // checkout" is on by default, and a single successful run enrols the email in
+  // Link — after which EVERY later run loads Checkout behind Link's "Confirm
+  // it's you" OTP modal, which covers the page so the card form can't be reached
+  // at all. That is precisely how this suite went from green on 2026-07-27 to
+  // failing every night on an unchanged commit.
+  const saveInfo = page.locator('#enableStripePass');
+  if (await saveInfo.count()) await saveInfo.uncheck({ force: true }).catch(() => {});
+
   // Targeted by testid, not accessible name. The button's text is actually
   // "PayProcessing" — a hidden "Processing" label sits inside it — so its
   // accessible name isn't reliably the exact string "Pay", which is what made
